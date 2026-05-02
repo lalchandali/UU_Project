@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroMitra — AI-Powered Agricultural Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dark:     #1C3A1E;
+    --mid:      #2C5F2E;
+    --light:    #97BC62;
+    --accent:   #F4C430;
+    --cream:    #F7FAF3;
+    --white:    #FFFFFF;
+    --gray:     #64748B;
+    --border:   #D9E8C8;
+    --card-bg:  #FFFFFF;
+    --page-bg:  #F2F6EE;
+    --text:     #1A2B1B;
+    --subtext:  #5A7060;
+    --badge-green-bg: #E0F0CE;
+    --badge-green-text: #2C5F2E;
+    --badge-amber-bg: #FEF3CD;
+    --badge-amber-text: #92600A;
+    --badge-blue-bg: #DDEEFF;
+    --badge-blue-text: #1A5FA0;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(28,58,30,0.08);
+    --shadow-md: 0 4px 20px rgba(28,58,30,0.12);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--page-bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    background: var(--dark);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 34px; height: 34px;
+    background: var(--light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .brand-name {
+    font-family: 'Fraunces', serif;
+    color: #fff;
+    font-size: 20px;
+    letter-spacing: -0.3px;
+  }
+  .brand-beta {
+    font-size: 10px;
+    background: rgba(151,188,98,0.25);
+    color: var(--light);
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: 4px;
+    vertical-align: middle;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 6px;
+  }
+  .nav-tab {
+    padding: 7px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: #bbb;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-tab.active {
+    background: var(--light);
+    color: var(--dark);
+  }
+  .nav-tab:not(.active):hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s;
+  }
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-icon { font-size: 22px; margin-bottom: 8px; }
+  .stat-label { font-size: 12px; color: var(--subtext); margin-bottom: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 24px; font-weight: 600; color: var(--text); font-family: 'Fraunces', serif; }
+  .stat-sub { font-size: 11px; color: var(--light); margin-top: 4px; font-weight: 500; }
+
+  /* ── LAYOUT ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1.2rem;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* ── PRODUCT LIST ── */
+  .product-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid #EEF4E8;
+    transition: background 0.12s;
+  }
+  .product-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .product-info { display: flex; align-items: center; gap: 12px; }
+  .product-emoji {
+    width: 40px; height: 40px;
+    background: var(--badge-green-bg);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .product-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .product-qty { font-size: 12px; color: var(--subtext); margin-top: 1px; }
+  .product-price { font-size: 15px; font-weight: 600; color: var(--mid); }
+
+  /* ── AI BADGE ── */
+  .ai-badge {
+    font-size: 10px;
+    background: linear-gradient(135deg, #e0f0ce, #c8e4a8);
+    color: var(--mid);
+    padding: 2px 7px;
+    border-radius: 99px;
+    margin-left: 6px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  /* ── STATUS BADGES ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--badge-green-bg); color: var(--badge-green-text); }
+  .badge-amber { background: var(--badge-amber-bg); color: var(--badge-amber-text); }
+  .badge-blue  { background: var(--badge-blue-bg);  color: var(--badge-blue-text); }
+
+  /* ── AI FORECAST PANEL ── */
+  .ai-panel {
+    background: linear-gradient(135deg, #e8f5d4, #d4ebb8);
+    border: 1px solid #b8d98a;
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .ai-panel-title {
+    font-size: 13px;
+    color: var(--mid);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ai-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(44,95,46,0.12);
+  }
+  .ai-row:last-child { border-bottom: none; }
+  .ai-crop { font-size: 13px; color: var(--text); }
+  .ai-price { font-size: 13px; font-weight: 600; color: var(--mid); }
+  .trend-up { color: #2a7a2c; font-size: 12px; margin-left: 4px; }
+  .trend-down { color: #c0392b; font-size: 12px; margin-left: 4px; }
+  .ai-footer { font-size: 11px; color: var(--mid); margin-top: 10px; opacity: 0.75; }
+
+  /* ── MINI BARS ── */
+  .mini-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .mini-bar-label { font-size: 12px; color: var(--subtext); width: 75px; flex-shrink: 0; }
+  .mini-bar-track {
+    flex: 1; height: 8px;
+    background: #e4eedd;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .mini-bar-fill { height: 100%; border-radius: 99px; background: var(--mid); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+  .mini-bar-val { font-size: 11px; color: var(--subtext); width: 36px; text-align: right; flex-shrink: 0; font-weight: 500; }
+
+  /* ── ORDER ITEM ── */
+  .order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #EEF4E8;
+  }
+  .order-item:last-child { border-bottom: none; }
+  .order-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .order-meta { font-size: 11px; color: var(--subtext); margin-top: 2px; }
+
+  /* ── CROP RECOMMENDATION ── */
+  .rec-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #F2F8EC;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid #D8ECC0;
+  }
+  .rec-icon { font-size: 24px; }
+  .rec-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .rec-desc { font-size: 11px; color: var(--subtext); margin-top: 1px; }
+
+  /* ── CONSUMER: SEARCH ── */
+  .search-wrap { position: relative; margin-bottom: 1.2rem; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
+  .search-bar {
+    width: 100%;
+    padding: 11px 14px 11px 42px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-bar:focus { border-color: var(--light); box-shadow: 0 0 0 3px rgba(151,188,98,0.18); }
+  .search-bar::placeholder { color: #a0b0a2; }
+
+  /* ── PRODUCT GRID CARDS ── */
+  .product-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+    box-shadow: var(--shadow);
+  }
+  .product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--light); }
+  .product-card-img {
+    height: 90px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    background: linear-gradient(135deg, #eaf5d8, #d8eebd);
+  }
+  .product-card-body { padding: 12px 14px; }
+  .product-card-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .product-card-farmer { font-size: 11px; color: var(--subtext); margin-bottom: 10px; }
+  .product-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-card-price { font-size: 15px; font-weight: 700; color: var(--mid); font-family: 'Fraunces', serif; }
+  .add-btn {
+    font-size: 12px;
+    padding: 5px 13px;
+    background: var(--mid);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .add-btn:hover { background: var(--dark); }
+  .add-btn:active { transform: scale(0.96); }
+  .add-btn.added { background: var(--light); color: var(--dark); }
+
+  /* ── CART ── */
+  .cart-sticky { position: sticky; top: 76px; }
+  .cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #EEF4E8;
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .cart-item-price { font-size: 12px; color: var(--subtext); margin-top: 1px; }
+  .qty-controls { display: flex; align-items: center; gap: 8px; }
+  .qty-btn {
+    width: 26px; height: 26px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, border-color 0.12s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .qty-btn:hover { background: #EEF4E8; border-color: var(--light); }
+  .qty-val { font-size: 13px; min-width: 18px; text-align: center; font-weight: 500; }
+  .cart-total {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1.5px solid var(--border);
+    font-family: 'Fraunces', serif;
+  }
+  .checkout-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--dark);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .checkout-btn:hover { background: var(--mid); }
+  .empty-cart {
+    text-align: center;
+    color: var(--subtext);
+    font-size: 13px;
+    padding: 1.5rem 0;
+    line-height: 1.8;
+  }
+  .empty-cart .empty-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+
+  /* ── ORDER TRACKING ── */
+  .track-steps { display: flex; align-items: flex-start; margin: 1.2rem 0; }
+  .track-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step-dot.done { background: var(--mid); color: #fff; }
+  .step-dot.active { background: var(--accent); color: var(--dark); box-shadow: 0 0 0 4px rgba(244,196,48,0.2); }
+  .step-dot.pending { background: #EEF4E8; color: #aaa; border: 1.5px solid var(--border); }
+  .step-label { font-size: 10px; color: var(--subtext); margin-top: 5px; text-align: center; line-height: 1.3; font-weight: 500; }
+  .step-line { flex: 1; height: 2px; margin-top: 14px; }
+  .step-line.done { background: var(--mid); }
+  .step-line.pending { background: var(--border); }
+  .track-info { font-size: 12px; color: var(--subtext); text-align: center; margin-top: 4px; line-height: 1.5; }
+
+  /* ── NEARBY FARMERS ── */
+  .farmer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #F2F8EC;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid #D8ECC0;
+    transition: background 0.15s;
+  }
+  .farmer-item:hover { background: #E8F5D4; }
+  .farmer-item:last-child { margin-bottom: 0; }
+  .farmer-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--badge-green-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--mid);
+    flex-shrink: 0;
+  }
+  .farmer-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .farmer-meta { font-size: 11px; color: var(--subtext); margin-top: 1px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 12px;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--dark);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    z-index: 999;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+  .modal-icon { font-size: 48px; margin-bottom: 12px; }
+  .modal-title { font-size: 20px; font-weight: 700; color: var(--text); font-family: 'Fraunces', serif; margin-bottom: 8px; }
+  .modal-body { font-size: 14px; color: var(--subtext); line-height: 1.6; margin-bottom: 1.5rem; }
+  .modal-btn {
+    padding: 10px 28px;
+    background: var(--mid);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .modal-btn:hover { background: var(--dark); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .panel { padding: 1rem; }
+  }
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .nav-tab { padding: 6px 12px; font-size: 12px; }
+    .brand-name { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="brand">
+    <div class="brand-icon">🌱</div>
+    <span class="brand-name">AgroMitra <span class="brand-beta">Beta</span></span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPanel('farmer', this)">🌾 Farmer Panel</button>
+    <button class="nav-tab" onclick="switchPanel('consumer', this)">🛒 Consumer Panel</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">Order Placed!</div>
+    <div class="modal-body">Your order has been sent to the farmer. Payment via bKash/Nagad confirmed. Expected delivery: <strong>Tomorrow, 10 AM</strong>.</div>
+    <button class="modal-btn" onclick="closeModal()">OK, Got it!</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FARMER PANEL
+═══════════════════════════════════════════ -->
+<div class="panel active" id="panel-farmer">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-label">Total Earnings</div>
+      <div class="stat-value">৳ 18,450</div>
+      <div class="stat-sub">↑ 12% this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-label">Active Listings</div>
+      <div class="stat-value">6</div>
+      <div class="stat-sub">3 products selling fast</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🚚</div>
+      <div class="stat-label">Pending Orders</div>
+      <div class="stat-value">4</div>
+      <div class="stat-sub">2 ready to ship</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Avg. Price Gain</div>
+      <div class="stat-value">+24%</div>
+      <div class="stat-sub">vs. middleman rates</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- My Listings -->
+      <div class="card">
+        <div class="card-title">📋 My Product Listings</div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🍅</div>
+            <div>
+              <div class="product-name">Tomato <span class="ai-badge">🤖 AI priced</span></div>
+              <div class="product-qty">80 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 45/kg</div>
+            <span class="badge badge-green">Active</span>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🧅</div>
+            <div>
+              <div class="product-name">Onion <span class="ai-badge">🤖 AI priced</span></div>
+              <div class="product-qty">120 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 38/kg</div>
+            <span class="badge badge-green">Active</span>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🥔</div>
+            <div>
+              <div class="product-name">Potato</div>
+              <div class="product-qty">200 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 22/kg</div>
+            <span class="badge badge-amber">Low stock soon</span>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🌶️</div>
+            <div>
+              <div class="product-name">Chili <span class="ai-badge">🤖 AI priced</span></div>
+              <div class="product-qty">30 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 120/kg</div>
+            <span class="badge badge-green">Active</span>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🍆</div>
+            <div>
+              <div class="product-name">Brinjal <span class="ai-badge">🤖 AI priced</span></div>
+              <div class="product-qty">60 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 35/kg</div>
+            <span class="badge badge-green">Active</span>
+          </div>
+        </div>
+        <div class="product-item">
+          <div class="product-info">
+            <div class="product-emoji">🥬</div>
+            <div>
+              <div class="product-name">Spinach</div>
+              <div class="product-qty">45 kg available</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="product-price">৳ 28/kg</div>
+            <span class="badge badge-blue">New</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="card">
+        <div class="card-title">🧾 Recent Orders</div>
+        <div class="order-item">
+          <div>
+            <div class="order-name">Order #1042 — Tomato 10kg</div>
+            <div class="order-meta">Buyer: Dhaka · ৳ 450 · via bKash</div>
+          </div>
+          <span class="badge badge-amber">Preparing</span>
+        </div>
+        <div class="order-item">
+          <div>
+            <div class="order-name">Order #1039 — Onion 25kg</div>
+            <div class="order-meta">Buyer: Chittagong · ৳ 950 · via Nagad</div>
+          </div>
+          <span class="badge badge-blue">Shipped</span>
+        </div>
+        <div class="order-item">
+          <div>
+            <div class="order-name">Order #1035 — Chili 5kg</div>
+            <div class="order-meta">Buyer: Sylhet · ৳ 600 · via bKash</div>
+          </div>
+          <span class="badge badge-green">Delivered</span>
+        </div>
+        <div class="order-item">
+          <div>
+            <div class="order-name">Order #1031 — Brinjal 8kg</div>
+            <div class="order-meta">Buyer: Rajshahi · ৳ 280 · via Nagad</div>
+          </div>
+          <span class="badge badge-green">Delivered</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <!-- AI Price Forecast -->
+      <div class="ai-panel">
+        <div class="ai-panel-title">🤖 AI Price Forecast — Next 7 Days</div>
+        <div class="ai-row">
+          <span class="ai-crop">🍅 Tomato</span>
+          <span class="ai-price">৳ 48–52/kg <span class="trend-up">↑ Rising</span></span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-crop">🧅 Onion</span>
+          <span class="ai-price">৳ 35–40/kg <span class="trend-down">↓ Dropping</span></span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-crop">🥔 Potato</span>
+          <span class="ai-price">৳ 20–24/kg <span class="trend-up">↑ Rising</span></span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-crop">🌶️ Chili</span>
+          <span class="ai-price">৳ 115–130/kg <span class="trend-up">↑ Rising</span></span>
+        </div>
+        <div class="ai-row">
+          <span class="ai-crop">🍆 Brinjal</span>
+          <span class="ai-price">৳ 32–38/kg <span class="trend-up">↑ Rising</span></span>
+        </div>
+        <div class="ai-footer">⚡ Powered by LSTM model · Updated 2 hrs ago · 85%+ accuracy</div>
+      </div>
+
+      <!-- Demand by Region -->
+      <div class="card">
+        <div class="card-title">📍 Demand by Region</div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">Dhaka</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:90%"></div></div>
+          <div class="mini-bar-val">Very High</div>
+        </div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">Chittagong</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:72%"></div></div>
+          <div class="mini-bar-val">High</div>
+        </div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">Sylhet</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:55%"></div></div>
+          <div class="mini-bar-val">Medium</div>
+        </div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">Rajshahi</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:40%"></div></div>
+          <div class="mini-bar-val">Low</div>
+        </div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">Khulna</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:32%"></div></div>
+          <div class="mini-bar-val">Low</div>
+        </div>
+      </div>
+
+      <!-- Crop Recommendation -->
+      <div class="card">
+        <div class="card-title">💡 AI Crop Recommendation</div>
+        <p style="font-size:12px;color:var(--subtext);margin-bottom:12px;">Based on your location (Gazipur) &amp; current season:</p>
+        <div class="rec-item">
+          <div class="rec-icon">🍆</div>
+          <div style="flex:1">
+            <div class="rec-name">Brinjal</div>
+            <div class="rec-desc">High profit margin · Low competition in your region</div>
+          </div>
+          <span class="badge badge-green">⭐ Top Pick</span>
+        </div>
+        <div class="rec-item">
+          <div class="rec-icon">🥬</div>
+          <div style="flex:1">
+            <div class="rec-name">Spinach</div>
+            <div class="rec-desc">Fast growing · Strong Dhaka demand this month</div>
+          </div>
+          <span class="badge badge-amber">Consider</span>
+        </div>
+        <div class="rec-item">
+          <div class="rec-icon">🫑</div>
+          <div style="flex:1">
+            <div class="rec-name">Capsicum</div>
+            <div class="rec-desc">Premium pricing · Growing restaurant demand</div>
+          </div>
+          <span class="badge badge-blue">Explore</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CONSUMER PANEL
+═══════════════════════════════════════════ -->
+<div class="panel" id="panel-consumer">
+  <div class="grid-2">
+
+    <!-- LEFT: Products + Tracking -->
+    <div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-bar" type="text" placeholder="Search vegetables, fruits, grains..." oninput="filterProducts(this.value)">
+      </div>
+
+      <div class="section-label">🌿 Fresh from farms near Dhaka</div>
+
+      <div class="grid-3" id="product-grid">
+        <div class="product-card" data-name="tomato">
+          <div class="product-card-img">🍅</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Tomato</div>
+            <div class="product-card-farmer">📍 Rahim Farm, Gazipur · ⭐ 4.8</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 45/kg</span>
+              <button class="add-btn" onclick="addToCart('Tomato', 45, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" data-name="onion">
+          <div class="product-card-img">🧅</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Onion</div>
+            <div class="product-card-farmer">📍 Karim Farm, Munshiganj · ⭐ 4.6</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 38/kg</span>
+              <button class="add-btn" onclick="addToCart('Onion', 38, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" data-name="potato">
+          <div class="product-card-img">🥔</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Potato</div>
+            <div class="product-card-farmer">📍 Ali Farm, Bogra · ⭐ 4.5</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 22/kg</span>
+              <button class="add-btn" onclick="addToCart('Potato', 22, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" data-name="chili">
+          <div class="product-card-img">🌶️</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Chili</div>
+            <div class="product-card-farmer">📍 Hasan Farm, Bogra · ⭐ 4.7</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 120/kg</span>
+              <button class="add-btn" onclick="addToCart('Chili', 120, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" data-name="brinjal">
+          <div class="product-card-img">🍆</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Brinjal</div>
+            <div class="product-card-farmer">📍 Mia Farm, Cumilla · ⭐ 4.9</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 35/kg</span>
+              <button class="add-btn" onclick="addToCart('Brinjal', 35, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-card" data-name="spinach">
+          <div class="product-card-img">🥬</div>
+          <div class="product-card-body">
+            <div class="product-card-name">Spinach</div>
+            <div class="product-card-farmer">📍 Islam Farm, Narsingdi · ⭐ 4.7</div>
+            <div class="product-card-footer">
+              <span class="product-card-price">৳ 28/kg</span>
+              <button class="add-btn" onclick="addToCart('Spinach', 28, this)">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Tracking -->
+      <div class="card" style="margin-top:1.2rem">
+        <div class="card-title">📦 Order Tracking — #1042</div>
+        <div class="track-steps">
+          <div class="track-step">
+            <div class="step-dot done">✓</div>
+            <div class="step-label">Order<br>Placed</div>
+          </div>
+          <div class="step-line done"></div>
+          <div class="track-step">
+            <div class="step-dot done">✓</div>
+            <div class="step-label">Farm<br>Confirmed</div>
+          </div>
+          <div class="step-line done"></div>
+          <div class="track-step">
+            <div class="step-dot active">●</div>
+            <div class="step-label">Packing</div>
+          </div>
+          <div class="step-line pending"></div>
+          <div class="track-step">
+            <div class="step-dot pending">4</div>
+            <div class="step-label">Shipped</div>
+          </div>
+          <div class="step-line pending"></div>
+          <div class="track-step">
+            <div class="step-dot pending">5</div>
+            <div class="step-label">Delivered</div>
+          </div>
+        </div>
+        <div class="track-info">
+          🍅 Tomato 10kg · Rahim Farm, Gazipur<br>
+          Estimated delivery: <strong>Tomorrow, 10:00 AM</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Cart + Farmers -->
+    <div>
+      <div class="cart-sticky">
+        <!-- Cart -->
+        <div class="card">
+          <div class="card-title">🛒 Your Cart <span id="cart-count" style="font-size:12px;color:var(--subtext);font-weight:400"></span></div>
+          <div id="cart-items">
+            <div class="empty-cart">
+              <span class="empty-icon">🛒</span>
+              Cart is empty.<br>Add fresh items from the left!
+            </div>
+          </div>
+          <div id="cart-footer" style="display:none">
+            <div class="cart-total" id="cart-total">Total: ৳ 0</div>
+            <button class="checkout-btn" onclick="checkout()">💳 Pay via bKash / Nagad →</button>
+          </div>
+        </div>
+
+        <!-- Nearby Farmers -->
+        <div class="card">
+          <div class="card-title">📍 Nearby Farmers</div>
+          <div class="farmer-item">
+            <div class="farmer-avatar">RF</div>
+            <div style="flex:1">
+              <div class="farmer-name">Rahim Farm</div>
+              <div class="farmer-meta">Gazipur · 12 km away · ⭐ 4.8 · Tomato, Spinach</div>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="farmer-item">
+            <div class="farmer-avatar">KF</div>
+            <div style="flex:1">
+              <div class="farmer-name">Karim Farm</div>
+              <div class="farmer-meta">Munshiganj · 28 km away · ⭐ 4.6 · Onion, Garlic</div>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="farmer-item">
+            <div class="farmer-avatar">MF</div>
+            <div style="flex:1">
+              <div class="farmer-name">Mia Farm</div>
+              <div class="farmer-meta">Cumilla · 45 km away · ⭐ 4.9 · Brinjal, Chili</div>
+            </div>
+            <span class="badge badge-amber">Closes 6 PM</span>
+          </div>
+          <div class="farmer-item">
+            <div class="farmer-avatar">HF</div>
+            <div style="flex:1">
+              <div class="farmer-name">Hasan Farm</div>
+              <div class="farmer-meta">Bogra · 52 km away · ⭐ 4.7 · Potato, Chili</div>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cart = [];
+
+  function switchPanel(p, btn) {
+    document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('panel-' + p).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function filterProducts(val) {
+    const v = val.toLowerCase().trim();
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.display = (!v || card.dataset.name.includes(v)) ? '' : 'none';
+    });
+  }
+
+  function addToCart(name, price, btn) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    btn.textContent = '✓ Added';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = '+ Add'; btn.classList.remove('added'); }, 1400);
+    renderCart();
+    showToast(name + ' added to cart!');
+  }
+
+  function changeQty(idx, delta) {
+    cart[idx].qty += delta;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    const footer = document.getElementById('cart-footer');
+    const countEl = document.getElementById('cart-count');
+
+    const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+    countEl.textContent = totalItems > 0 ? `(${totalItems} items)` : '';
+
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="empty-cart"><span class="empty-icon">🛒</span>Cart is empty.<br>Add fresh items from the left!</div>';
+      footer.style.display = 'none';
+      return;
+    }
+
+    container.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div>
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">৳ ${item.price}/kg × ${item.qty} kg = ৳ ${item.price * item.qty}</div>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+        </div>
+      </div>`).join('');
+
+    footer.style.display = 'block';
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('cart-total').textContent = 'Total: ৳ ' + total.toLocaleString();
+  }
+
+  function checkout() {
+    if (cart.length === 0) return;
+    cart.length = 0;
+    renderCart();
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✅ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>

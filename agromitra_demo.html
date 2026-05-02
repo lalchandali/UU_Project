@@ -1,0 +1,560 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .app { min-height: 600px; background: var(--color-background-tertiary); }
+
+  /* NAV */
+  .navbar {
+    background: #1C3A1E;
+    padding: 0 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px; position: sticky; top: 0; z-index: 100;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand-icon { width: 28px; height: 28px; background: #97BC62; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .brand-name { color: #fff; font-weight: 500; font-size: 17px; letter-spacing: -0.3px; }
+  .brand-tag { color: #97BC62; font-size: 11px; margin-left: 4px; }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    padding: 6px 16px; border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500;
+    border: none; cursor: pointer; transition: background 0.15s;
+    color: #ccc; background: transparent;
+  }
+  .nav-tab.active { background: #97BC62; color: #1C3A1E; }
+  .nav-tab:not(.active):hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+  /* PANELS */
+  .panel { display: none; padding: 1.5rem; }
+  .panel.active { display: block; }
+
+  /* STAT CARDS */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg); padding: 1rem;
+  }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-sub { font-size: 11px; color: #97BC62; margin-top: 2px; }
+
+  /* CARDS */
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg); padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* PRODUCT LISTING */
+  .product-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .product-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .product-info { display: flex; align-items: center; gap: 10px; }
+  .product-emoji { width: 36px; height: 36px; background: #EAF3DE; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .product-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .product-qty { font-size: 11px; color: var(--color-text-secondary); }
+  .product-price { font-size: 13px; font-weight: 500; color: #2C5F2E; }
+  .ai-badge { font-size: 10px; background: #EAF3DE; color: #3B6D11; padding: 2px 6px; border-radius: 99px; margin-left: 6px; }
+  .badge {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 99px; font-weight: 500;
+  }
+  .badge-green { background: #EAF3DE; color: #3B6D11; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+
+  /* ORDERS */
+  .order-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .order-item:last-child { border-bottom: none; }
+
+  /* AI PREDICTION */
+  .ai-panel { background: #EAF3DE; border: 0.5px solid #C0DD97; border-radius: var(--border-radius-lg); padding: 1rem; margin-bottom: 1rem; }
+  .ai-panel-title { font-size: 12px; color: #3B6D11; font-weight: 500; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .ai-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .ai-crop { font-size: 13px; color: var(--color-text-primary); }
+  .ai-price { font-size: 13px; font-weight: 500; color: #2C5F2E; }
+  .trend { font-size: 11px; margin-left: 6px; }
+  .trend-up { color: #3B6D11; }
+  .trend-down { color: #A32D2D; }
+
+  /* MINI CHART */
+  .mini-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .mini-bar-label { font-size: 11px; color: var(--color-text-secondary); width: 60px; flex-shrink: 0; }
+  .mini-bar-track { flex: 1; height: 8px; background: var(--color-background-secondary); border-radius: 99px; overflow: hidden; }
+  .mini-bar-fill { height: 100%; border-radius: 99px; background: #2C5F2E; transition: width 0.6s ease; }
+  .mini-bar-val { font-size: 11px; color: var(--color-text-secondary); width: 40px; text-align: right; flex-shrink: 0; }
+
+  /* CONSUMER — PRODUCT GRID */
+  .product-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg); overflow: hidden;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .product-card:hover { border-color: var(--color-border-secondary); }
+  .product-card-img { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: #EAF3DE; }
+  .product-card-body { padding: 10px 12px; }
+  .product-card-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .product-card-farmer { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .product-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-card-price { font-size: 14px; font-weight: 500; color: #2C5F2E; }
+  .add-btn {
+    font-size: 11px; padding: 4px 10px; background: #2C5F2E; color: #fff;
+    border: none; border-radius: var(--border-radius-md); cursor: pointer;
+    transition: background 0.15s;
+  }
+  .add-btn:hover { background: #1C3A1E; }
+  .add-btn.added { background: #97BC62; color: #1C3A1E; }
+
+  /* CART */
+  .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-total { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-top: 10px; text-align: right; }
+  .checkout-btn {
+    width: 100%; margin-top: 10px; padding: 10px; background: #1C3A1E; color: #fff;
+    border: none; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .checkout-btn:hover { background: #2C5F2E; }
+  .empty-cart { text-align: center; color: var(--color-text-secondary); font-size: 13px; padding: 1rem 0; }
+
+  /* SEARCH */
+  .search-bar {
+    width: 100%; padding: 9px 12px; border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md); font-size: 13px; margin-bottom: 1rem;
+    background: var(--color-background-primary); color: var(--color-text-primary);
+  }
+
+  /* PROGRESS */
+  .track-steps { display: flex; align-items: center; gap: 0; margin: 1rem 0; }
+  .track-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .step-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; }
+  .step-dot.done { background: #2C5F2E; color: #fff; }
+  .step-dot.active { background: #F4C430; color: #1C3A1E; }
+  .step-dot.pending { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+  .step-label { font-size: 10px; color: var(--color-text-secondary); margin-top: 4px; text-align: center; }
+  .step-line { flex: 1; height: 2px; background: var(--color-border-tertiary); margin-top: -12px; }
+  .step-line.done { background: #2C5F2E; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+
+<div class="app">
+  <div class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🌱</div>
+      <span class="brand-name">AgroMitra <span class="brand-tag">Beta</span></span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchPanel('farmer')">🌾 Farmer Panel</button>
+      <button class="nav-tab" onclick="switchPanel('consumer')">🛒 Consumer Panel</button>
+    </div>
+  </div>
+
+  <!-- FARMER PANEL -->
+  <div class="panel active" id="panel-farmer">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Earnings</div>
+        <div class="stat-value">৳ 18,450</div>
+        <div class="stat-sub">↑ 12% this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Listings</div>
+        <div class="stat-value">6</div>
+        <div class="stat-sub">3 products selling fast</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Orders</div>
+        <div class="stat-value">4</div>
+        <div class="stat-sub">2 ready to ship</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. Price Gain</div>
+        <div class="stat-value">+24%</div>
+        <div class="stat-sub">vs. middleman rates</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <!-- My Listings -->
+        <div class="card">
+          <div class="card-title">My Product Listings</div>
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-emoji">🍅</div>
+              <div>
+                <div class="product-name">Tomato <span class="ai-badge">AI priced</span></div>
+                <div class="product-qty">80 kg available</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="product-price">৳ 45/kg</div>
+              <span class="badge badge-green">Active</span>
+            </div>
+          </div>
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-emoji">🧅</div>
+              <div>
+                <div class="product-name">Onion <span class="ai-badge">AI priced</span></div>
+                <div class="product-qty">120 kg available</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="product-price">৳ 38/kg</div>
+              <span class="badge badge-green">Active</span>
+            </div>
+          </div>
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-emoji">🥔</div>
+              <div>
+                <div class="product-name">Potato</div>
+                <div class="product-qty">200 kg available</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="product-price">৳ 22/kg</div>
+              <span class="badge badge-amber">Low stock</span>
+            </div>
+          </div>
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-emoji">🌶️</div>
+              <div>
+                <div class="product-name">Chili <span class="ai-badge">AI priced</span></div>
+                <div class="product-qty">30 kg available</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="product-price">৳ 120/kg</div>
+              <span class="badge badge-green">Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders -->
+        <div class="card">
+          <div class="card-title">Recent Orders</div>
+          <div class="order-item">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Order #1042 — Tomato 10kg</div>
+              <div style="font-size:11px;color:var(--color-text-secondary)">Buyer: Dhaka — ৳ 450</div>
+            </div>
+            <span class="badge badge-amber">Preparing</span>
+          </div>
+          <div class="order-item">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Order #1039 — Onion 25kg</div>
+              <div style="font-size:11px;color:var(--color-text-secondary)">Buyer: Chittagong — ৳ 950</div>
+            </div>
+            <span class="badge badge-green">Shipped</span>
+          </div>
+          <div class="order-item">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Order #1035 — Chili 5kg</div>
+              <div style="font-size:11px;color:var(--color-text-secondary)">Buyer: Sylhet — ৳ 600</div>
+            </div>
+            <span class="badge badge-blue">Delivered</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- AI Price Prediction -->
+        <div class="ai-panel">
+          <div class="ai-panel-title">🤖 AI Price Forecast — Next 7 Days</div>
+          <div class="ai-row">
+            <span class="ai-crop">🍅 Tomato</span>
+            <span class="ai-price">৳ 48–52/kg <span class="trend trend-up">↑</span></span>
+          </div>
+          <div class="ai-row">
+            <span class="ai-crop">🧅 Onion</span>
+            <span class="ai-price">৳ 35–40/kg <span class="trend trend-down">↓</span></span>
+          </div>
+          <div class="ai-row">
+            <span class="ai-crop">🥔 Potato</span>
+            <span class="ai-price">৳ 20–24/kg <span class="trend trend-up">↑</span></span>
+          </div>
+          <div class="ai-row">
+            <span class="ai-crop">🌶️ Chili</span>
+            <span class="ai-price">৳ 115–130/kg <span class="trend trend-up">↑</span></span>
+          </div>
+          <div style="font-size:11px;color:#3B6D11;margin-top:8px;">Powered by LSTM model · Updated 2 hrs ago</div>
+        </div>
+
+        <!-- Demand by Region -->
+        <div class="card">
+          <div class="card-title">Demand by Region</div>
+          <div class="mini-bar-row">
+            <div class="mini-bar-label">Dhaka</div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:90%"></div></div>
+            <div class="mini-bar-val">High</div>
+          </div>
+          <div class="mini-bar-row">
+            <div class="mini-bar-label">Chittagong</div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:70%"></div></div>
+            <div class="mini-bar-val">Med</div>
+          </div>
+          <div class="mini-bar-row">
+            <div class="mini-bar-label">Sylhet</div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:55%"></div></div>
+            <div class="mini-bar-val">Med</div>
+          </div>
+          <div class="mini-bar-row">
+            <div class="mini-bar-label">Rajshahi</div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:40%"></div></div>
+            <div class="mini-bar-val">Low</div>
+          </div>
+          <div class="mini-bar-row">
+            <div class="mini-bar-label">Khulna</div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:35%"></div></div>
+            <div class="mini-bar-val">Low</div>
+          </div>
+        </div>
+
+        <!-- Crop Recommendation -->
+        <div class="card">
+          <div class="card-title">AI Crop Recommendation</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">Based on your location & season:</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+              <span style="font-size:20px">🍆</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Brinjal</div><div style="font-size:11px;color:var(--color-text-secondary)">High profit · Low competition</div></div>
+              <span class="badge badge-green">Recommended</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+              <span style="font-size:20px">🥬</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Spinach</div><div style="font-size:11px;color:var(--color-text-secondary)">Fast growing · Good demand</div></div>
+              <span class="badge badge-amber">Consider</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSUMER PANEL -->
+  <div class="panel" id="panel-consumer">
+    <div class="grid-2">
+      <div>
+        <input class="search-bar" type="text" placeholder="🔍 Search vegetables, fruits..." oninput="filterProducts(this.value)">
+
+        <div class="section-title">Fresh from farms near Dhaka</div>
+        <div class="grid-3" id="product-grid">
+          <div class="product-card" data-name="tomato">
+            <div class="product-card-img">🍅</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Tomato</div>
+              <div class="product-card-farmer">Rahim Farm, Gazipur</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 45/kg</span>
+                <button class="add-btn" onclick="addToCart('Tomato','৳ 45/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" data-name="onion">
+            <div class="product-card-img">🧅</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Onion</div>
+              <div class="product-card-farmer">Karim Farm, Munshiganj</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 38/kg</span>
+                <button class="add-btn" onclick="addToCart('Onion','৳ 38/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" data-name="potato">
+            <div class="product-card-img">🥔</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Potato</div>
+              <div class="product-card-farmer">Ali Farm, Bogra</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 22/kg</span>
+                <button class="add-btn" onclick="addToCart('Potato','৳ 22/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" data-name="chili">
+            <div class="product-card-img">🌶️</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Chili</div>
+              <div class="product-card-farmer">Hasan Farm, Bogra</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 120/kg</span>
+                <button class="add-btn" onclick="addToCart('Chili','৳ 120/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" data-name="brinjal">
+            <div class="product-card-img">🍆</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Brinjal</div>
+              <div class="product-card-farmer">Mia Farm, Cumilla</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 35/kg</span>
+                <button class="add-btn" onclick="addToCart('Brinjal','৳ 35/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" data-name="spinach">
+            <div class="product-card-img">🥬</div>
+            <div class="product-card-body">
+              <div class="product-card-name">Spinach</div>
+              <div class="product-card-farmer">Islam Farm, Narsingdi</div>
+              <div class="product-card-footer">
+                <span class="product-card-price">৳ 28/kg</span>
+                <button class="add-btn" onclick="addToCart('Spinach','৳ 28/kg',this)">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Tracking -->
+        <div class="card" style="margin-top:1rem">
+          <div class="card-title">Order Tracking — #1042</div>
+          <div class="track-steps">
+            <div class="track-step">
+              <div class="step-dot done">✓</div>
+              <div class="step-label">Order<br>Placed</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="track-step">
+              <div class="step-dot done">✓</div>
+              <div class="step-label">Farm<br>Confirmed</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="track-step">
+              <div class="step-dot active">●</div>
+              <div class="step-label">Packing</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="track-step">
+              <div class="step-dot pending">4</div>
+              <div class="step-label">Shipped</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="track-step">
+              <div class="step-dot pending">5</div>
+              <div class="step-label">Delivered</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--color-text-secondary);text-align:center">Estimated delivery: Tomorrow 10 AM · 🍅 Tomato 10kg from Rahim Farm</div>
+        </div>
+      </div>
+
+      <!-- CART -->
+      <div>
+        <div class="card" style="position:sticky;top:70px">
+          <div class="card-title">🛒 Your Cart</div>
+          <div id="cart-items">
+            <div class="empty-cart">Cart is empty.<br>Add items from the left!</div>
+          </div>
+          <div id="cart-footer" style="display:none">
+            <div class="cart-total" id="cart-total">Total: ৳ 0</div>
+            <button class="checkout-btn" onclick="checkout()">Pay with bKash / Nagad →</button>
+          </div>
+        </div>
+
+        <!-- Nearby Farmers -->
+        <div class="card">
+          <div class="card-title">📍 Nearby Farmers</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+              <div style="width:36px;height:36px;border-radius:50%;background:#EAF3DE;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px;color:#3B6D11;flex-shrink:0">RF</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Rahim Farm</div><div style="font-size:11px;color:var(--color-text-secondary)">Gazipur · 12 km · ⭐ 4.8</div></div>
+              <span class="badge badge-green">Open</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+              <div style="width:36px;height:36px;border-radius:50%;background:#EAF3DE;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px;color:#3B6D11;flex-shrink:0">KF</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Karim Farm</div><div style="font-size:11px;color:var(--color-text-secondary)">Munshiganj · 28 km · ⭐ 4.6</div></div>
+              <span class="badge badge-green">Open</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+              <div style="width:36px;height:36px;border-radius:50%;background:#EAF3DE;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px;color:#3B6D11;flex-shrink:0">MF</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Mia Farm</div><div style="font-size:11px;color:var(--color-text-secondary)">Cumilla · 45 km · ⭐ 4.9</div></div>
+              <span class="badge badge-amber">Closes 6pm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cart = [];
+
+  function switchPanel(p) {
+    document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('panel-' + p).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function filterProducts(val) {
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.style.display = card.dataset.name.includes(val.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function addToCart(name, price, btn) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) { existing.qty++; }
+    else { cart.push({ name, price, qty: 1 }); }
+    btn.textContent = 'Added ✓';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add'; btn.classList.remove('added'); }, 1200);
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    const footer = document.getElementById('cart-footer');
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="empty-cart">Cart is empty.<br>Add items from the left!</div>';
+      footer.style.display = 'none';
+      return;
+    }
+    container.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${item.name}</div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">${item.price} × ${item.qty} kg</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="changeQty(${i},-1)" style="width:22px;height:22px;border:0.5px solid var(--color-border-secondary);background:transparent;border-radius:4px;cursor:pointer;color:var(--color-text-primary);font-size:14px;display:flex;align-items:center;justify-content:center">−</button>
+          <span style="font-size:13px;min-width:16px;text-align:center">${item.qty}</span>
+          <button onclick="changeQty(${i},1)" style="width:22px;height:22px;border:0.5px solid var(--color-border-secondary);background:transparent;border-radius:4px;cursor:pointer;color:var(--color-text-primary);font-size:14px;display:flex;align-items:center;justify-content:center">+</button>
+        </div>
+      </div>`).join('');
+    footer.style.display = 'block';
+    const total = cart.reduce((s, i) => s + parseInt(i.price.replace(/\D/g,'')) * i.qty, 0);
+    document.getElementById('cart-total').textContent = 'Total: ৳ ' + total.toLocaleString();
+  }
+
+  function changeQty(idx, delta) {
+    cart[idx].qty += delta;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    renderCart();
+  }
+
+  function checkout() {
+    alert('✅ Order placed! Payment via bKash/Nagad.\nYour order will be delivered within 24 hours.');
+    cart.length = 0;
+    renderCart();
+  }
+</script>
