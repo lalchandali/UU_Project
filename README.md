@@ -1,6 +1,6 @@
 # 🌱 AgroMitra — AI-Powered Agricultural Marketplace
 
-**AgroMitra** is a modern web-based marketplace platform connecting farmers directly with consumers. It eliminates middlemen, ensures fair pricing through AI-powered forecasts, and enables transparent, efficient agricultural commerce in Bangladesh.
+**AgroMitra** is a modern web-based marketplace platform connecting farmers directly with consumers. It eliminates middlemen, ensures fair pricing through AI-powered forecasts, and enables transpar[...]
 
 ## ✨ Key Features
 
@@ -88,6 +88,10 @@ python -m http.server  # For local server
 3. Start exploring:
    - **Farmer Mode**: Click "🌾 Farmer Panel" to manage crops and view analytics
    - **Consumer Mode**: Click "🛒 Consumer Panel" to browse and purchase
+
+## 🌐 Live View
+
+🔗 **[View Live Project](https://lalchandali.github.io/UU_Project/demo.html)** — Open the interactive demo in your browser
 
 ## 💡 Usage Guide
 
